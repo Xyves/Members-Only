@@ -1,0 +1,20 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "driver": "PostgreSQL",
+      "name": "Xyv",
+      "database": "postgres",
+      "username": "postgres",
+      "connectString": "postgresql://postgres.cuaxvmtljoucsglvfyha:7VPm6RMsgA$e$a@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
+    },
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "driver": "PostgreSQL",
+      "name": "X",
+      "connectString": "postgresql://postgres.cuaxvmtljoucsglvfyha:7VPm6RMsgA$e$a@aws-0-eu-central-1.pooler.supabase.com:5432/postgres"
+    }
+  ]
+}
