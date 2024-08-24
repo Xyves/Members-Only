@@ -8,7 +8,7 @@
   </head>
   <body class="bg-[#3f4345]">
     <%- include("partials/nav.ejs" ) %>
-    <ul>
+    <% if(user){%>
     <form
       class="flex flex-col justify-center items-center mx-auto max-w-md p-4"
       method="post"
@@ -33,6 +33,7 @@
         Submit
       </button>
     </form>
+    <% } %>
     <ul class="flex justify-center items-center flex-col my-6">
       <% posts.forEach((post)=>{ %>
         <li class="post flex flex-col bg-yellow-50 w-1/3">
