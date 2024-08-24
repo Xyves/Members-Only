@@ -4,21 +4,24 @@ async function getPosts() {
   const { rows } = await pool.query("SELECT * FROM posts ORDER BY id DESC");
   return rows;
 }
-// async function getUser(username) {
-//   const { rows } = await pool.query("SELECT * FROM users WHERE username = $1", [
-//     username,
-//   ]);
-//   const user = rows[0];
-// }
+
+async function getUser(username) {
+  const { rows } = await pool.query("SELECT * FROM users WHERE username = $1", [
+    username,
+  ]);
+  return rows[0];
+}
+async function getUserById(id) {
+  const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+  return rows[0];
+}
 async function createPost(title, text) {
   await pool.query("INSERT INTO posts(title,message) VALUES ($1,$2)", [
     title,
     text,
   ]);
 }
-async function getUser(nickname) {
-  await pool.query("SELECT * FROM users WHERE nickname = ($1)", [nickname]);
-}
+
 async function createUser(firstname, secondname, nickname, password, secret) {
   if (secret == process.env.MEMBER_STATUS) {
     const admin = "admin";
@@ -42,4 +45,5 @@ module.exports = {
   createPost,
   getUser,
   createUser,
+  getUserById,
 };
