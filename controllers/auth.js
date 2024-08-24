@@ -1,5 +1,4 @@
 const { body, validationResult } = require("express-validator");
-
 function createUserValidation() {
   return [
     body("nickname")
@@ -43,4 +42,5 @@ function validateMiddleware(req, res, next) {
   }
   next();
 }
+
 module.exports = { validateMiddleware, createUserValidation };

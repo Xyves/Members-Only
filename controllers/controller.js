@@ -1,48 +1,6 @@
 const db = require("../db/query");
-var passport = require("passport");
-var LocalStrategy = require("passport-local");
-var crypto = require("crypto");
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
-passport.use(
-  new LocalStrategy(async (username, password, done) => {
-    try {
-      const { rows } = await pool.query(
-        "SELECT * FROM users WHERE username = $1",
-        [username]
-      );
-      const user = rows[0];
-      const match = await bcrypt.compare(password, user.password);
-
-      if (!user) {
-        return done(null, false, { message: "Incorrect username" });
-      }
-      if (!match) {
-        return done(null, false, { message: "Incorrect password" });
-      }
-      return done(null, user);
-    } catch (err) {
-      return done(err);
-    }
-  })
-);
-passport.serializeUser((user, done) => {
-  console.log("serializeUser");
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  try {
-    console.log("deserializeUser");
-    const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [
-      id,
-    ]);
-    const user = rows[0];
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
-});
+const passport = require("passport");
+const bcrypt = require("bcryptjs");
 
 async function getIndex(req, res) {
   const posts = await db.getPosts();
@@ -53,7 +11,24 @@ async function getIndex(req, res) {
   });
 }
 async function getLogIn(req, res) {
+  if (req.isAuthenticated()) {
+    res.send(`Hello, ${req.user.username}`);
+  }
   res.render("login", { title: "LOGIN" });
+}
+async function loginFormPost(req, res) {
+  console.log("logging in");
+  console.log(req.session);
+  try {
+    passport.authenticate("local", {
+      successRedirect: "/post/posts",
+      failureRedirect: "/user/login",
+    });
+    console.log("authenticated?");
+    // res.redirect("/")
+  } catch (err) {
+    console.log(err);
+  }
 }
 async function postMessage(req, res) {
   const { title, message } = req.body;
@@ -62,14 +37,6 @@ async function postMessage(req, res) {
   res.redirect("/");
 }
 
-async function postLogIn(req, res, next) {
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-  })(req, res, next);
-}
-
-// run passport, check the username and hashed password comparison in db, if correct log in and redirect to "/"
 async function getSignUp(req, res) {
   res.render("sign-up.ejs", { title: "Sign up" });
 }
@@ -79,8 +46,6 @@ async function postSignUp(req, res) {
     await db.createUser(firstName, secondName, nickname, hash, secret);
   });
   res.redirect("/");
-
-  // Check if the user with the same nickname exists: IF NOT create new user in db, log him, redirect to main page
 }
 async function getDelete(req, res) {
   const tile = req.params;
@@ -89,8 +54,8 @@ async function getDelete(req, res) {
 module.exports = {
   getLogIn,
   getIndex,
-  postLogIn,
   getSignUp,
   postSignUp,
   postMessage,
+  loginFormPost,
 };
