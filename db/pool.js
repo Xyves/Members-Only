@@ -7,6 +7,3 @@ module.exports = new Pool({
   host: process.env.PGHOST,
   port: 6543,
 });
-console.log("Total clients:", Pool.totalCount);
-console.log("Idle clients:", Pool.idleCount);
-console.log("Waiting clients:", Pool.waitingCount);

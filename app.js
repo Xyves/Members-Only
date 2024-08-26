@@ -31,6 +31,5 @@ app.use((req, res, next) => {
 });
 
 app.use("/", usersRouter);
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Express app listening on port ${PORT}!`));
