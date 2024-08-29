@@ -21,8 +21,8 @@ async function loginFormPost(req, res) {
   console.log(req.session);
   try {
     passport.authenticate("local", {
-      successRedirect: "/post/posts",
-      failureRedirect: "/user/login",
+      successRedirect: "/",
+      failureRedirect: "/login",
     });
     console.log("authenticated?");
     // res.redirect("/")
