@@ -9,23 +9,13 @@ function createUserValidation() {
       .withMessage("Nickname should not contain spaces"),
 
     body("password")
-      .isLength({ min: 6, max: 15 })
-      .withMessage("Password must be between 6 and 15 characters")
+      .isLength({ min: 4, max: 15 })
+      .withMessage("Password must be between 4 and 15 characters")
       .notEmpty()
-      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,15}$/)
+      .matches(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d\W_]{6,15}$/)
       .withMessage(
-        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+        "Password must contain at least one uppercase letter and one number"
       ),
-
-    body("message")
-      .isLength({ max: 500 })
-      .withMessage("Message must be no more than 500 characters long")
-      .custom((value) => {
-        if (/<\/?[a-z][\s\S]*>/i.test(value)) {
-          throw new Error("Message should not contain HTML or script tags");
-        }
-        return true;
-      }),
 
     body("passwordConfirmation").custom((value, { req }) => {
       if (value !== req.body.password) {
