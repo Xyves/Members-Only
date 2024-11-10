@@ -1,10 +1,9 @@
 const db = require("../db/query");
-const passport = require("passport");
+const passport = require("./passport-config");
 const bcrypt = require("bcryptjs");
 
 async function getIndex(req, res) {
   const posts = await db.getPosts();
-  console.log(req.user);
   res.render("index.ejs", {
     posts: posts,
     user: req.user,
@@ -12,29 +11,21 @@ async function getIndex(req, res) {
 }
 async function getLogIn(req, res) {
   if (req.isAuthenticated()) {
-    res.send(`Hello, ${req.user.username}`);
+    return res.send(`Hello, ${req.user.username}`);
   }
-  res.render("login", { title: "LOGIN" });
+  res.render("login", { title: "Please Log In" });
 }
-async function loginFormPost(req, res) {
-  console.log("logging in");
-  console.log(req.session);
-  try {
-    passport.authenticate("local", {
-      successRedirect: "/",
-      failureRedirect: "/login",
-    });
-    console.log("authenticated?");
-    // res.redirect("/")
-  } catch (err) {
-    console.log(err);
-  }
-}
-async function postMessage(req, res) {
+
+async function postPost(req, res) {
   const { title, message } = req.body;
-  const user = req.user;
-  db.createPost(title, message, user);
-  res.redirect("/");
+  const { nickname } = res.locals.user;
+  try {
+    await db.createPost(title, message, nickname);
+    res.redirect("/");
+  } catch (error) {
+    console.error("Error creating post:", error);
+    res.status(500).send("Internal Server Error");
+  }
 }
 
 async function getSignUp(req, res) {
@@ -45,10 +36,12 @@ async function postSignUp(req, res) {
   bcrypt.hash(password, 10, async function (err, hash) {
     await db.createUser(firstName, secondName, nickname, hash, secret);
   });
-  res.redirect("/");
+  res.redirect("/login");
 }
-async function getDelete(req, res) {
-  const tile = req.params;
+async function deletePost(req, res) {
+  const { id } = req.params;
+  await db.deletePost(id);
+  res.redirect("/");
 }
 
 module.exports = {
@@ -56,6 +49,6 @@ module.exports = {
   getIndex,
   getSignUp,
   postSignUp,
-  postMessage,
-  loginFormPost,
+  postPost,
+  deletePost,
 };

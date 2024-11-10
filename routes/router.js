@@ -1,28 +1,28 @@
 const { Router } = require("express");
 const controller = require("../controllers/controller");
 const appRouter = Router();
-const passport = require("passport");
+const passport = require("../controllers/passport-config");
+// const passport = require
 const auth = require("../controllers/auth");
 appRouter.get("/", controller.getIndex);
 appRouter.get("/login", controller.getLogIn);
-// appRouter.post("/login", (req, res, next) => {
-//   passport.authenticate("local", (err, user, info) => {
-//     if (err) {
-//       return next(err);
-//     }
-//     if (!user) {
-//       console.log("Authentication failed:", info.message);
-//       return res.redirect("/login");
-//     }
-//     req.logIn(user, (err) => {
-//       if (err) {
-//         return next(err);
-//       }
-//       console.log("User logged in successfully:", user);
-//       return res.redirect("/");
-//     });
-//   })(req, res, next);
-// });
+appRouter.get("/dashboard", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.send(`Welcome to the dashboard, ${req.user.username}`);
+  } else {
+    // res.redirect("/login");
+  }
+});
+appRouter.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) return next(err); // Pass error to error handling middleware
+    if (!user) return res.status(401).json({ message: info.message }); // Handle authentication failure
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      res.redirect("/"); // Success
+    });
+  })(req, res, next);
+});
 appRouter.get("/sign-up", controller.getSignUp);
 appRouter.post(
   "/sign-up",
@@ -30,8 +30,8 @@ appRouter.post(
   auth.validateMiddleware,
   controller.postSignUp
 );
-appRouter.post("/addPost", controller.postMessage);
-appRouter.get("/log-out", (req, res, next) => {
+appRouter.post("/addPost", controller.postPost);
+appRouter.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) {
       return next(err);
@@ -39,6 +39,5 @@ appRouter.get("/log-out", (req, res, next) => {
     res.redirect("/");
   });
 });
-appRouter.post("/login", controller.loginFormPost);
-
+appRouter.post("/delete/:id", controller.deletePost);
 module.exports = appRouter;
