@@ -18,8 +18,12 @@
           >
         </li>
         <div class="items flex text-white">
-          <li><a href="/login" class="inline-block">Sign In</a></li>
+          <% if(!user){%>
+          <li><a href="/login" class="inline-block mx-5">Sign In</a></li>
           <li><a href="sign-up " class="inline-block">Sign Up</a></li>
+          <%}else{%>
+          <li><a href="/logout" class="inline-block mx-5">Logout</a></li>
+          <% } %>
         </div>
       </ul>
     </nav>
