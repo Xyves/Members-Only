@@ -5,9 +5,9 @@ async function getPosts() {
   return rows;
 }
 
-async function getUser(username) {
-  const { rows } = await pool.query("SELECT * FROM users WHERE username = $1", [
-    username,
+async function getUser(nickname) {
+  const { rows } = await pool.query("SELECT * FROM users WHERE nickname = $1", [
+    nickname,
   ]);
   return rows[0];
 }
@@ -15,11 +15,11 @@ async function getUserById(id) {
   const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
   return rows[0];
 }
-async function createPost(title, text) {
-  await pool.query("INSERT INTO posts(title,message) VALUES ($1,$2)", [
-    title,
-    text,
-  ]);
+async function createPost(title, text, nickname) {
+  await pool.query(
+    'INSERT INTO posts("title", "message", "user") VALUES ($1, $2, $3)',
+    [title, text, nickname]
+  );
 }
 
 async function createUser(firstname, secondname, nickname, password, secret) {
@@ -36,7 +36,6 @@ async function createUser(firstname, secondname, nickname, password, secret) {
     );
   }
 }
-async function logIn() {}
 async function deletePost(id) {
   await pool.query("DELETE FROM posts WHERE id = ($1)", [id]);
 }
@@ -46,4 +45,5 @@ module.exports = {
   getUser,
   createUser,
   getUserById,
+  deletePost,
 };
