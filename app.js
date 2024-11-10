@@ -5,7 +5,7 @@ const app = express();
 const path = require("path");
 const passport = require("./controllers/passport-config");
 // var passport = require("passport");
-const session = require("express-session");
+const session = require("cookie-session");
 const usersRouter = require("./routes/router");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("views", path.join(__dirname, "views"));
@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   session({
-    secret: process.env.secret,
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
